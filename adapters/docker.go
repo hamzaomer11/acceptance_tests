@@ -12,13 +12,20 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-func StartDockerServer(t testing.TB, port string, dockerFilePath string) {
+func StartDockerServer(
+	t testing.TB,
+	port string,
+	binToBuild string,
+) {
 	ctx := context.Background()
 	t.Helper()
 	req := testcontainers.ContainerRequest{
 		FromDockerfile: testcontainers.FromDockerfile{
-			Context:       "../../.",
-			Dockerfile:    dockerFilePath,
+			Context:    "../../.",
+			Dockerfile: "Dockerfile",
+			BuildArgs: map[string]*string{
+				"bin_to_build": &binToBuild,
+			},
 			PrintBuildLog: true,
 		},
 		ExposedPorts: []string{fmt.Sprintf("%s:%s", port, port)},
@@ -32,5 +39,4 @@ func StartDockerServer(t testing.TB, port string, dockerFilePath string) {
 	t.Cleanup(func() {
 		assert.NoError(t, container.Terminate(ctx))
 	})
-
 }
