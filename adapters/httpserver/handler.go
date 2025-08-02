@@ -4,10 +4,24 @@ import (
 	"fmt"
 	"net/http"
 
-	go_specs_greet "github.com/quii/go-specs-greet/domain/interactions"
+	"github.com/quii/go-specs-greet/domain/interactions"
 )
 
-func Handler(w http.ResponseWriter, r *http.Request) {
-	name := r.URL.Query().Get("name")
-	fmt.Fprint(w, go_specs_greet.Greet(name))
+var (
+	greetPath = "/greet"
+	cursePath = "/curse"
+)
+
+func NewHandler() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc(greetPath, Reply(interactions.Greet))
+	mux.HandleFunc(cursePath, Reply(interactions.Curse))
+	return mux
+}
+
+func Reply(f func(name string) (interaction string)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := r.URL.Query().Get("name")
+		fmt.Fprint(w, f(name))
+	}
 }
