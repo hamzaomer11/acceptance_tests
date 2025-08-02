@@ -15,6 +15,7 @@ import (
 // for forward compatibility
 type GreeterServer interface {
 	Greet(context.Context, *grpcserver.GreetRequest) (*grpcserver.GreetReply, error)
+	Curse(context.Context, *grpcserver.CurseRequest) (*grpcserver.CurseReply, error)
 	mustEmbedUnimplementedGreeterServer()
 }
 
@@ -37,4 +38,8 @@ type GreetServer struct {
 
 func (g GreetServer) Greet(ctx context.Context, request *grpcserver.GreetRequest) (*grpcserver.GreetReply, error) {
 	return &grpcserver.GreetReply{Message: interactions.Greet(request.Name)}, nil
+}
+
+func (g GreetServer) Curse(ctx context.Context, request *grpcserver.CurseRequest) (*grpcserver.CurseReply, error) {
+	return &grpcserver.CurseReply{Message: interactions.Curse(request.Name)}, nil
 }
